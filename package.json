@@ -1,0 +1,14 @@
+{
+  "name": "whats-on-brisbane",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "kaamraan kamaal",
+  "license": "MIT",
+  "dependencies": {
+    "nightwatch": "^0.9.21"
+  }
+}
