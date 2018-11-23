@@ -9,6 +9,7 @@
   "author": "kaamraan kamaal",
   "license": "MIT",
   "dependencies": {
+    "ask-sdk": "^2.3.0",
     "cheerio": "^1.0.0-rc.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.2"
