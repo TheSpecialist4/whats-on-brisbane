@@ -8,7 +8,7 @@ const CONFIG = {
     }
 }
 
-exports.getEvents = () => {
+exports.getEvents = async () => {
     return request(CONFIG)
         .then($ => {
             const events = [];

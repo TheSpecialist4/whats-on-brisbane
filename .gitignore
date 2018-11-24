@@ -76,4 +76,4 @@ typings/
 .fusebox/
 
 # zip files
-.zip
+*.zip
