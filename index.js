@@ -11,40 +11,33 @@ const persistenceAdapter = new DynamoDbPersistenceAdapter({
 const CARD_TITLE = 'What\'s on Brisbane';
 
 const sendEventsInfo = async (handlerInput) => {
-    return new Promise((resolve, reject) => {
-        handlerInput.attributesManager.getPersistentAttributes()
-            .then(attributes => {
-                const date = new Date();
-                const day = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
-                let events = [];
-                const storedEvents = attributes[day];
-                if (storedEvents) {
-                    events = storedEvents;
-                } else {
-                    events = await whatsOn.getEvents();
-                    attributes[day] = {
-                        events: events
-                    };
-                    handlerInput.attributesManager.setPersistentAttributes(attributes);
-                    handlerInput.attributesManager.savePersistentAttributes();
-                }
-                let eventsText = '';
-                events.forEach(event => {
-                    eventsText += `${event.event}. ${event.date}`;
-                });
-                const speechText = eventsText ? 
-                    'Here are the top events happening in Brisbane this week: ' + eventsText
-                    : 'Sorry, there was an error in retrieving the events. Please try again shortly.'
-                resolve(handlerInput.responseBuilder
-                    .speak(speechText)
-                    .reprompt(speechText)
-                    .withSimpleCard(CARD_TITLE, speechText)
-                    .getResponse());
-            })
-            .catch(err => {
-                reject(err);
-            });
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+    const day = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+    let events = [];
+    const storedEvents = attributes[day];
+    if (storedEvents) {
+        events = storedEvents;
+    } else {
+        events = await whatsOn.getEvents();
+        attributes[day] = {
+            events: events
+        };
+        handlerInput.attributesManager.setPersistentAttributes(attributes);
+        await handlerInput.attributesManager.savePersistentAttributes();
+    }
+    let eventsText = '';
+    events.forEach(event => {
+        eventsText += `${event.event}. ${event.date}`;
     });
+    const speechText = eventsText ? 
+        'Here are the top events happening in Brisbane this week: ' + eventsText
+        : 'Sorry, there was an error in retrieving the events. Please try again shortly.';
+    console.log('sendingEVentsInfo: ', speechText);
+    return handlerInput.responseBuilder
+        .speak(speechText)
+        .reprompt(speechText)
+        .withSimpleCard(CARD_TITLE, speechText)
+        .getResponse();
 }
 
 const LaunchRequestHandler = {
@@ -76,7 +69,7 @@ const HelpIntentHandler = {
         return handlerInput.responseBuilder
             .speak(speechText)
             .reprompt(speechText)
-            .withSimpleCard("What's on Brisbane", speechText)
+            .withSimpleCard(CARD_TITLE, speechText)
             .getResponse();
     }
 };
@@ -91,7 +84,7 @@ const CancelAndStopIntentHandler = {
         const speechText = 'Goodbye!';
         return handlerInput.responseBuilder
             .speak(speechText)
-            .withSimpleCard('Hello World', speechText)
+            .withSimpleCard(CARD_TITLE, speechText)
             .getResponse();
     }
 };
